@@ -18,7 +18,10 @@ import static org.springframework.hateoas.config.EnableHypermediaSupport.Hyperme
 @Configuration
 @EnableAutoConfiguration
 @EnableHypermediaSupport(type = HAL_FORMS)
-@ComponentScan
+@ComponentScan(basePackages = {
+    "io.pillopl.library.lending.patronprofile.web",
+    "io.pillopl.library.common.web"
+})
 public class WebConfiguration {
 
     @Bean

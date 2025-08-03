@@ -110,6 +110,7 @@ class PatronProfileController {
         );
         return result
                 .map(success -> ResponseEntity.ok().build())
+                .recover(r -> Match(r).of(Case($(Predicates.instanceOf(IllegalArgumentException.class)), ResponseEntity.notFound().build())))
                 .getOrElse(ResponseEntity.status(INTERNAL_SERVER_ERROR).build());
     }
 
