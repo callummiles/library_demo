@@ -818,6 +818,3 @@ Please note application will be run with `local` Spring profile to setup some in
 3. [Software Architecture for Developers](https://softwarearchitecturefordevelopers.com) by Simon Brown
 4. [Clean Architecture](https://www.amazon.com/Clean-Architecture-Craftsmans-Software-Structure/dp/0134494164) by Robert C. Martin
 5. [Domain-Driven Design: Tackling Complexity in the Heart of Software](https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215) by Eric Evans
-
----
-*This library management system demonstrates practical DDD implementation patterns.*
