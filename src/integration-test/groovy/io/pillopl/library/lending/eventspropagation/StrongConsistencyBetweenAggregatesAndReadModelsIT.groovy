@@ -28,6 +28,18 @@ import static io.pillopl.library.lending.patron.model.PatronFixture.anyPatronId
 import static io.pillopl.library.lending.patron.model.PatronFixture.regularPatron
 import static io.pillopl.library.lending.patron.model.PatronType.Regular
 
+/**
+ * Integration test for strong consistency between aggregates and read models.
+ * 
+ * This test verifies that when domain events are published, all related aggregates
+ * and read models are updated synchronously within the same transaction. It ensures
+ * that when a patron places a hold on a book, the patron aggregate, book aggregate,
+ * and daily sheet read model are all updated consistently and immediately.
+ * 
+ * Strong consistency is crucial for maintaining data integrity across different
+ * parts of the system, ensuring that all views of the data remain synchronized
+ * after each operation.
+ */
 @SpringBootTest(classes = LendingTestContext.class)
 class StrongConsistencyBetweenAggregatesAndReadModelsIT extends Specification {
 
@@ -44,6 +56,14 @@ class StrongConsistencyBetweenAggregatesAndReadModelsIT extends Specification {
     @Autowired
     DataSource datasource
 
+    /**
+     * Verifies that domain events properly synchronize all related aggregates and
+     * read models in a strongly consistent manner. When a patron places a hold on
+     * a book, this test ensures that the patron aggregate is updated with the hold,
+     * the book aggregate transitions to BookOnHold state, and the daily sheet
+     * read model is updated with the new hold information, all within the same
+     * transaction boundary.
+     */
     def 'should synchronize Patron, Book and DailySheet with events'() {
         given:
             bookRepository.save(book)

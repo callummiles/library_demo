@@ -30,6 +30,18 @@ import static io.pillopl.library.lending.patron.model.PatronFixture.anyPatronId
 import static io.pillopl.library.lending.patron.model.PatronFixture.regularPatron
 import static io.pillopl.library.lending.patron.model.PatronType.Regular
 
+/**
+ * Integration test for eventual consistency between aggregates and read models.
+ * 
+ * This test verifies that when domain events are published asynchronously,
+ * all related aggregates and read models eventually reach a consistent state.
+ * Unlike strong consistency, this test uses polling conditions to wait for
+ * the asynchronous event processing to complete.
+ * 
+ * Eventual consistency is important for scenarios where immediate consistency
+ * is not required and the system can tolerate brief periods where different
+ * parts of the system may have slightly different views of the data.
+ */
 @SpringBootTest(classes = [LendingTestContext.class, DomainEventsTestConfig.class])
 class EventualConsistencyBetweenAggregatesAndReadModelsIT extends Specification {
 
@@ -48,6 +60,13 @@ class EventualConsistencyBetweenAggregatesAndReadModelsIT extends Specification 
 
     PollingConditions pollingConditions = new PollingConditions(timeout: 6)
 
+    /**
+     * Verifies that domain events eventually synchronize all related aggregates
+     * and read models through asynchronous processing. This test uses polling
+     * conditions to wait for the eventual consistency to be achieved, ensuring
+     * that the book aggregate transitions to BookOnHold state and the daily sheet
+     * is updated, even when events are processed asynchronously.
+     */
     def 'should synchronize Patron, Book and DailySheet with events'() {
         given:
             bookRepository.save(book)

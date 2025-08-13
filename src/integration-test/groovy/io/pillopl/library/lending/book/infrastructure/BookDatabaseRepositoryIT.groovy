@@ -16,6 +16,18 @@ import static io.pillopl.library.lending.book.model.BookFixture.circulatingAvail
 import static io.pillopl.library.lending.librarybranch.model.LibraryBranchFixture.anyBranch
 import static io.pillopl.library.lending.patron.model.PatronFixture.anyPatronId
 
+/**
+ * Integration test for the BookDatabaseRepository persistence operations.
+ * 
+ * This test verifies that book aggregates can be properly persisted to and retrieved
+ * from the database using the BookDatabaseRepository. It focuses on testing the
+ * infrastructure layer's ability to handle book aggregate persistence within the
+ * lending bounded context.
+ * 
+ * The test ensures that the repository correctly maintains book state and can
+ * persist different book states (like AvailableBook) to the underlying database
+ * infrastructure.
+ */
 @SpringBootTest(classes = LendingTestContext.class)
 class BookDatabaseRepositoryIT extends Specification {
 
@@ -26,6 +38,12 @@ class BookDatabaseRepositoryIT extends Specification {
     @Autowired
     BookDatabaseRepository bookEntityRepository
 
+    /**
+     * Verifies that book aggregates can be successfully persisted to and retrieved
+     * from the database. This test ensures the basic persistence functionality
+     * works correctly for book aggregates in the lending context, confirming
+     * that the repository can save and load books with their correct state.
+     */
     def 'persistence in real database should work'() {
         given:
             AvailableBook availableBook = circulatingAvailableBookAt(bookId, libraryBranchId)

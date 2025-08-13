@@ -20,6 +20,17 @@ import static io.pillopl.library.lending.patron.model.PatronEvent.BookPlacedOnHo
 import static io.pillopl.library.lending.patron.model.PatronEvent.BookPlacedOnHoldEvents.events
 import static io.pillopl.library.lending.patron.model.PatronFixture.anyPatronId
 
+/**
+ * Integration test for finding available books in the database.
+ * 
+ * This test verifies that the repository can correctly identify and retrieve
+ * books that are in an "available" state (ready for lending). It tests the
+ * query functionality that distinguishes between available books and books
+ * that are currently on hold or checked out.
+ * 
+ * This is essential for the lending process, as patrons can only place holds
+ * on books that are currently available for lending.
+ */
 @SpringBootTest(classes = LendingTestContext.class)
 class FindAvailableBookInDatabaseIT extends Specification {
 
@@ -30,6 +41,13 @@ class FindAvailableBookInDatabaseIT extends Specification {
     @Autowired
     BookDatabaseRepository bookEntityRepository
 
+    /**
+     * Verifies that the repository can correctly identify available books and
+     * distinguish them from books that are on hold. This test ensures that
+     * when a book is available, it can be found by the findAvailableBookBy query,
+     * but when the same book is placed on hold, it is no longer returned by
+     * the available book query.
+     */
     def 'should find available book in database'() {
         given:
             AvailableBook availableBook = circulatingAvailableBookAt(bookId, libraryBranchId)

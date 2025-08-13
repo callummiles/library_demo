@@ -23,6 +23,17 @@ import static io.pillopl.library.lending.patron.model.PatronEvent.BookPlacedOnHo
 import static io.pillopl.library.lending.patron.model.PatronEvent.BookPlacedOnHoldEvents.events
 import static io.pillopl.library.lending.patron.model.PatronFixture.anyPatronId
 
+/**
+ * Integration test for optimistic locking behavior in book aggregate persistence.
+ * 
+ * This test verifies that the book repository correctly implements optimistic locking
+ * to prevent concurrent modification issues. When multiple processes attempt to modify
+ * the same book aggregate simultaneously, the repository should detect version conflicts
+ * and throw an AggregateRootIsStale exception to maintain data consistency.
+ * 
+ * This is crucial for maintaining aggregate integrity in a concurrent environment
+ * where multiple patrons might attempt to place holds on the same book simultaneously.
+ */
 @SpringBootTest(classes = LendingTestContext.class)
 class OptimisticLockingBookAggregateIT extends Specification {
 
@@ -33,6 +44,13 @@ class OptimisticLockingBookAggregateIT extends Specification {
     @Autowired
     BookDatabaseRepository bookEntityRepository
 
+    /**
+     * Verifies that optimistic locking correctly prevents concurrent modifications
+     * to the same book aggregate. This test simulates a scenario where a book is
+     * loaded, modified by another process, and then an attempt is made to save
+     * the stale version. The repository should detect the version conflict and
+     * throw an AggregateRootIsStale exception to maintain data consistency.
+     */
     def 'persistence in real database should work'() {
         given:
             AvailableBook availableBook = circulatingAvailableBookAt(bookId, libraryBranchId)

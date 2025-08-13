@@ -24,6 +24,18 @@ import static java.time.Clock.fixed
 import static java.time.Instant.now
 import static java.time.ZoneId.systemDefault
 
+/**
+ * Integration test for daily sheet holds tracking and expiration detection.
+ * 
+ * This test verifies that the daily sheet read model correctly tracks holds
+ * and identifies which holds are expired or about to expire. The daily sheet
+ * is a crucial operational tool for library staff to manage expired holds
+ * and maintain efficient library operations.
+ * 
+ * The test covers various scenarios including expired holds, future holds,
+ * open-ended holds, and the effects of hold cancellations, expirations,
+ * and checkouts on the daily sheet reporting.
+ */
 @SpringBootTest(classes = LendingTestContext.class)
 class FindingHoldsInDailySheetDatabaseIT extends Specification {
 
@@ -44,6 +56,12 @@ class FindingHoldsInDailySheetDatabaseIT extends Specification {
         readModel = new SheetsReadModel(new JdbcTemplate(dataSource), fixed(TIME_OF_EXPIRE_CHECK, systemDefault()))
     }
 
+    /**
+     * Verifies that the daily sheet correctly identifies expired holds.
+     * This test places holds with different expiration dates and ensures
+     * that only holds that have expired (expiration date in the past)
+     * are included in the expired holds count, while future holds are excluded.
+     */
     def 'should find expired holds'() {
         given:
             int currentNoOfExpiredHolds = readModel.queryForHoldsToExpireSheet().count()
@@ -55,6 +73,12 @@ class FindingHoldsInDailySheetDatabaseIT extends Specification {
             readModel.queryForHoldsToExpireSheet().count() == currentNoOfExpiredHolds + 1
     }
 
+    /**
+     * Verifies that processing the same BookPlacedOnHold event multiple times
+     * does not create duplicate entries in the daily sheet. This ensures
+     * idempotent event processing, which is crucial for reliable event-driven
+     * systems where events might be replayed or processed multiple times.
+     */
     def 'handling placed on hold should de idempotent'() {
         given:
             int currentNoOfExpiredHolds = readModel.queryForHoldsToExpireSheet().count()
@@ -66,6 +90,12 @@ class FindingHoldsInDailySheetDatabaseIT extends Specification {
             readModel.queryForHoldsToExpireSheet().count() == currentNoOfExpiredHolds + 1
     }
 
+    /**
+     * Verifies that open-ended holds (holds without expiration dates) are
+     * never included in the expired holds report. Open-ended holds are
+     * typically used for researcher patrons and should not appear in
+     * daily operational reports for expired holds.
+     */
     def 'should never find open-ended holds'() {
         given:
             int currentNoOfExpiredHolds = readModel.queryForHoldsToExpireSheet().count()
@@ -75,6 +105,12 @@ class FindingHoldsInDailySheetDatabaseIT extends Specification {
             readModel.queryForHoldsToExpireSheet().count() == currentNoOfExpiredHolds
     }
 
+    /**
+     * Verifies that canceled holds are removed from the expired holds report.
+     * When a hold is canceled, it should no longer appear in daily operational
+     * reports, ensuring that library staff only see active holds that require
+     * attention.
+     */
     def 'should never find canceled holds'() {
         given:
             int currentNoOfExpiredHolds = readModel.queryForHoldsToExpireSheet().count()
@@ -86,6 +122,12 @@ class FindingHoldsInDailySheetDatabaseIT extends Specification {
             readModel.queryForHoldsToExpireSheet().count() == currentNoOfExpiredHolds
     }
 
+    /**
+     * Verifies that holds that have already been processed as expired are
+     * removed from the expired holds report. Once a hold has been marked
+     * as expired through the hold expiration process, it should no longer
+     * appear in daily operational reports.
+     */
     def 'should never find already expired holds'() {
         given:
             int currentNoOfExpiredHolds = readModel.queryForHoldsToExpireSheet().count()
@@ -97,6 +139,12 @@ class FindingHoldsInDailySheetDatabaseIT extends Specification {
             readModel.queryForHoldsToExpireSheet().count() == currentNoOfExpiredHolds
     }
 
+    /**
+     * Verifies that holds that have been fulfilled through book checkout
+     * are removed from the expired holds report. Once a patron checks out
+     * a book they had on hold, the hold should no longer appear in daily
+     * operational reports since it has been successfully completed.
+     */
     def 'should never find already checkedOut holds'() {
         given:
             int currentNoOfExpiredHolds = readModel.queryForHoldsToExpireSheet().count()

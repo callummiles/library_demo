@@ -24,6 +24,18 @@ import static io.pillopl.library.lending.patron.model.PatronFixture.anyPatronId
 import static io.pillopl.library.lending.patron.model.PatronFixture.regularPatron
 import static io.pillopl.library.lending.patron.model.PatronType.Regular
 
+/**
+ * Integration test for patron aggregate persistence operations.
+ * 
+ * This test verifies that patron aggregates can be properly persisted to and
+ * retrieved from the database through domain events. It tests the event-driven
+ * persistence model where patron state changes are captured as events and
+ * the patron repository can reconstruct patron aggregates from these events.
+ * 
+ * The test ensures that patron creation and hold placement events are correctly
+ * processed and that the resulting patron aggregate reflects the expected state
+ * when retrieved from the repository.
+ */
 @SpringBootTest(classes = LendingTestContext.class)
 class PatronDatabaseRepositoryIT extends Specification {
 
@@ -34,6 +46,13 @@ class PatronDatabaseRepositoryIT extends Specification {
     @Autowired
     Patrons patronRepo
 
+    /**
+     * Verifies that patron aggregates can be persisted and retrieved through
+     * domain events. This test publishes patron creation and book hold events,
+     * then verifies that the patron can be retrieved from the repository with
+     * the correct state, including the number of holds. This ensures the
+     * event-driven persistence model works correctly for patron aggregates.
+     */
     def 'persistence in real database should work'() {
         when:
             patronRepo.publish(patronCreated())

@@ -27,6 +27,18 @@ import static io.pillopl.library.lending.librarybranch.model.LibraryBranchFixtur
 import static io.pillopl.library.lending.patron.model.PatronFixture.anyPatronId
 import static java.time.Instant.now
 
+/**
+ * Integration test for patron profile database queries and read model updates.
+ * 
+ * This test verifies that the patron profile read model correctly reflects
+ * the current state of a patron's holds and checkouts. It tests the complete
+ * lifecycle of patron profile updates as domain events are processed, ensuring
+ * that the read model accurately represents the patron's current lending status.
+ * 
+ * The patron profile is a crucial read model that provides a consolidated view
+ * of a patron's current holds and checkouts, which is essential for library
+ * staff and patron self-service operations.
+ */
 @SpringBootTest(classes = LendingTestContext.class)
 class FindingPatronProfileInDatabaseIT extends Specification {
 
@@ -53,6 +65,13 @@ class FindingPatronProfileInDatabaseIT extends Specification {
         patronProfiles = new PatronProfileReadModel(new JdbcTemplate(dataSource))
     }
 
+    /**
+     * Verifies that the patron profile read model correctly reflects changes
+     * in patron holds and checkouts as domain events are processed. This test
+     * walks through the complete lifecycle: creating an empty profile, adding
+     * a hold, checking out a book, and returning a book, ensuring the profile
+     * accurately reflects each state transition.
+     */
     def 'should create patron profile'() {
         when:
             PatronProfile profile = createProfile()

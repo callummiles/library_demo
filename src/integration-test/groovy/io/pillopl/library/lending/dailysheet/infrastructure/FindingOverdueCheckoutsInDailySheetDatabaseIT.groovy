@@ -23,6 +23,17 @@ import static java.time.Clock.fixed
 import static java.time.Instant.now
 import static java.time.ZoneId.systemDefault
 
+/**
+ * Integration test for daily sheet overdue checkout tracking and detection.
+ * 
+ * This test verifies that the daily sheet read model correctly tracks checkouts
+ * and identifies which checkouts are overdue. The daily sheet is an essential
+ * operational tool for library staff to manage overdue books and follow up
+ * with patrons who have not returned books on time.
+ * 
+ * The test covers scenarios including overdue checkouts, future due dates,
+ * and the effects of book returns on the overdue checkout reporting.
+ */
 @SpringBootTest(classes = LendingTestContext.class)
 class FindingOverdueCheckoutsInDailySheetDatabaseIT extends Specification {
 
@@ -42,6 +53,12 @@ class FindingOverdueCheckoutsInDailySheetDatabaseIT extends Specification {
         readModel = new SheetsReadModel(new JdbcTemplate(dataSource), fixed(TIME_OF_EXPIRE_CHECK, systemDefault()))
     }
 
+    /**
+     * Verifies that the daily sheet correctly identifies overdue checkouts.
+     * This test creates checkouts with different due dates and ensures that
+     * only checkouts that are overdue (due date in the past) are included
+     * in the overdue checkouts count, while future due dates are excluded.
+     */
     def 'should find overdue checkouts'() {
         given:
             int currentNoOfOverdueCheckouts = readModel.queryForCheckoutsToOverdue().count()
@@ -53,6 +70,12 @@ class FindingOverdueCheckoutsInDailySheetDatabaseIT extends Specification {
             readModel.queryForCheckoutsToOverdue().count() == currentNoOfOverdueCheckouts + 1
     }
 
+    /**
+     * Verifies that processing the same BookCheckedOut event multiple times
+     * does not create duplicate entries in the daily sheet. This ensures
+     * idempotent event processing, which is crucial for reliable event-driven
+     * systems where events might be replayed or processed multiple times.
+     */
     def 'handling bookCheckedOut should de idempotent'() {
         given:
             int currentNoOfOverdueCheckouts = readModel.queryForCheckoutsToOverdue().count()
@@ -64,6 +87,12 @@ class FindingOverdueCheckoutsInDailySheetDatabaseIT extends Specification {
             readModel.queryForCheckoutsToOverdue().count() == currentNoOfOverdueCheckouts + 1
     }
 
+    /**
+     * Verifies that returned books are removed from the overdue checkouts report.
+     * When a book is returned, it should no longer appear in daily operational
+     * reports for overdue checkouts, ensuring that library staff only see
+     * books that are still checked out and overdue.
+     */
     def 'should never find returned books'() {
         given:
             int currentNoOfOverdueCheckouts = readModel.queryForCheckoutsToOverdue().count()

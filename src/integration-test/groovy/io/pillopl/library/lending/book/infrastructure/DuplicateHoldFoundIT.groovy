@@ -26,6 +26,18 @@ import static io.pillopl.library.lending.patron.model.PatronEvent.PatronCreated
 import static io.pillopl.library.lending.patron.model.PatronFixture.anyPatronId
 import static io.pillopl.library.lending.patron.model.PatronType.Regular
 
+/**
+ * Integration test for duplicate hold detection and compensation logic.
+ * 
+ * This test verifies the system's ability to handle duplicate hold scenarios
+ * where multiple patrons attempt to place holds on the same book simultaneously.
+ * The system should detect this conflict and apply compensation logic to resolve
+ * the duplicate hold situation, typically by canceling the duplicate hold.
+ * 
+ * This test uses eventual consistency patterns and polling to verify that
+ * the compensation events are properly processed and the duplicate hold
+ * is resolved asynchronously.
+ */
 @SpringBootTest(classes = [LendingTestContext.class, DomainEventsTestConfig.class])
 class DuplicateHoldFoundIT extends Specification {
 
@@ -46,6 +58,13 @@ class DuplicateHoldFoundIT extends Specification {
 
     PollingConditions pollingConditions = new PollingConditions(timeout: 15)
 
+    /**
+     * Verifies that the system correctly handles duplicate hold scenarios through
+     * compensation events. When two patrons attempt to place holds on the same book,
+     * the system should detect the duplicate and compensate by removing the duplicate
+     * hold, leaving the second patron with zero holds. This test uses eventual
+     * consistency patterns to verify the compensation logic works correctly.
+     */
     def 'should react to compensation event - duplicate hold on book found'() {
         given:
             bookRepository.save(book)
