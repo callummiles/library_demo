@@ -16,8 +16,9 @@
     3.7 [No ORM](#no-orm)  
     3.8 [Architecture-code gap](#architecture-code-gap)  
     3.9 [Model-code gap](#model-code-gap)   
-    3.10 [Spring](#spring)  
-    3.11 [Tests](#tests)  
+    3.10 [Book Model Migration Utility](#book-model-migration-utility)  
+    3.11 [Spring](#spring)  
+    3.12 [Tests](#tests)  
 4. [How to contribute](#how-to-contribute)
 5. [References](#references)
 
@@ -679,6 +680,55 @@ PlacingOnHoldPolicy onlyResearcherPatronsCanPlaceOpenEndedHolds = (AvailableBook
     return right(new Allowance());
 };
 ```
+
+#### Book Model Migration Utility
+
+As part of the evolution towards a more robust State pattern implementation, we've introduced a migration utility that enables conversion between the old book model (separate state classes) and the new unified State pattern model.
+
+##### Old vs New Model Architecture
+
+**Old Model** (`model` package):
+- `AvailableBook` - Books ready for checkout or hold placement
+- `BookOnHold` - Books reserved by a specific patron  
+- `CheckedOutBook` - Books currently borrowed by a patron
+
+**New Model** (`new_model` package):
+- `Book` - Single aggregate root with `BookState` interface
+- `AvailableState`, `OnHoldState`, `CheckedOutState` - Concrete state implementations
+
+##### Migration Utility Usage
+
+The `BookMigrationUtility` class provides type-safe conversion methods:
+
+```java
+// Convert old model instances to new State pattern
+AvailableBook oldBook = new AvailableBook(bookId, bookType, branch, version);
+Book newBook = BookMigrationUtility.migrate(oldBook);
+
+BookOnHold bookOnHold = new BookOnHold(bookId, bookType, branch, patron, holdTill, version);
+Book migratedBook = BookMigrationUtility.migrate(bookOnHold);
+
+CheckedOutBook checkedOut = new CheckedOutBook(bookId, bookType, branch, patron, version);
+Book convertedBook = BookMigrationUtility.migrate(checkedOut);
+```
+
+##### Data Preservation Guarantees
+
+The migration utility ensures complete data preservation:
+- **Book Identity**: BookId and BookType are maintained exactly
+- **Version Numbers**: Preserved for optimistic locking compatibility
+- **State-Specific Data**: Patron IDs, branch locations, and timestamps are transferred accurately
+- **Business Rules**: All state transition logic and constraints are respected
+
+##### Implementation Details
+
+The utility uses reflection to set the internal state of `Book` objects since the constructor always creates `AvailableState` initially. This approach ensures:
+- Type safety through overloaded methods for each old model type
+- Complete data integrity during conversion
+- Seamless integration with existing business logic
+- Backward compatibility during transition periods
+
+This migration utility enables gradual adoption of the new State pattern while maintaining full compatibility with existing data and business operations.
 
 #### Spring
 Spring Framework seems to be the most popular Java framework ever used. Unfortunately it is also quite common
