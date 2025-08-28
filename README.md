@@ -733,6 +733,34 @@ def 'should make book available when hold canceled'() {
 _Please also note the **when** block, where we manifest the fact that books react to 
 cancellation event_
 
+#### Web Layer Testing
+The project includes comprehensive unit test coverage for REST API controllers using Spring Boot's `@WebMvcTest` annotation. As an example, the `PatronProfileController` has complete test coverage with 17 test scenarios covering:
+
+- **All HTTP endpoints**: GET operations for patron profiles, holds/checkouts collections and individual resources
+- **Command endpoints**: POST operations for placing holds, DELETE operations for canceling holds  
+- **Error scenarios**: 404 responses for missing resources, 500 responses for service failures, proper exception handling
+- **HATEOAS response validation**: Verification of hypermedia links and affordances in JSON responses
+- **JSON request/response mapping**: Validation of request deserialization and response serialization
+- **Service layer mocking**: Proper isolation using `@MockBean` for `PatronProfiles`, `PlacingOnHold`, and `CancelingHold` dependencies
+
+The web layer tests follow the same Spock/Groovy patterns used throughout the project, combining Spring Boot's testing annotations with BDD-style specifications:
+
+```groovy
+def "should return patron profile with HATEOAS links"() {
+    when:
+        def response = mockMvc.perform(get("/profiles/{patronId}", patronId))
+
+    then:
+        response.andExpect(status().isOk())
+               .andExpect(jsonPath('$.patronId').value(patronId.toString()))
+               .andExpect(jsonPath('$._links.self.href').exists())
+               .andExpect(jsonPath('$._links.holds.href').exists())
+               .andExpect(jsonPath('$._links.checkouts.href').exists())
+}
+```
+
+This approach ensures that the web layer is thoroughly tested in isolation from the underlying business logic, while maintaining consistency with the project's overall testing philosophy.
+
 ## How to contribute
 
 The project is still under construction, so if you like it enough to collaborate, just let us
