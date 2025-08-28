@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Java 11
+- Java 17
 - Maven 3.6+
 - IDE (IntelliJ IDEA, Eclipse, or VS Code)
 
