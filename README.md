@@ -733,6 +733,51 @@ def 'should make book available when hold canceled'() {
 _Please also note the **when** block, where we manifest the fact that books react to 
 cancellation event_
 
+#### Web Layer Testing
+For testing REST API endpoints, we utilize Spring Boot's `@WebMvcTest` annotation combined with Spock framework to create comprehensive integration tests for our web controllers. This approach allows us to test the complete HTTP request/response cycle while mocking service dependencies.
+
+The `PatronProfileController` serves as an example of comprehensive web layer testing:
+
+```groovy
+@WebMvcTest(PatronProfileController)
+class PatronProfileControllerTest extends Specification {
+
+    @Autowired
+    MockMvc mockMvc
+
+    @MockBean
+    PatronProfiles patronProfiles
+
+    @MockBean
+    PlacingOnHold placingOnHold
+
+    @MockBean
+    CancelingHold cancelingHold
+
+    def "should return patron profile with HATEOAS links"() {
+        when:
+        def response = mockMvc.perform(get("/profiles/{patronId}", patronId))
+
+        then:
+        response.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath('$.patronId').value(patronId.toString()))
+                .andExpect(jsonPath('$._links.self.href').exists())
+                .andExpect(jsonPath('$._links.holds.href').exists())
+                .andExpect(jsonPath('$._links.checkouts.href').exists())
+    }
+}
+```
+
+This testing approach covers:
+- **All HTTP endpoints**: GET, POST, DELETE operations for profiles, holds, and checkouts
+- **Request/response mapping**: JSON serialization/deserialization and path variable binding
+- **Error scenarios**: 404 Not Found, 500 Internal Server Error, malformed requests
+- **HATEOAS verification**: Links generation and affordances for REST operations
+- **Service mocking**: Using `@MockBean` to isolate web layer from business logic
+
+The web layer tests complement our domain-focused Spock tests by ensuring the REST API correctly exposes business functionality to external clients.
+
 ## How to contribute
 
 The project is still under construction, so if you like it enough to collaborate, just let us
