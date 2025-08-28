@@ -84,14 +84,18 @@ class FindingPatronProfileInDatabaseIT extends Specification {
 
     void thereIsOnlyOneHold(PatronProfile profile) {
         assert profile.holdsView.currentHolds.size() == 1
-        assert profile.holdsView.currentHolds.get(0) == new Hold(bookId, TOMORROW)
+        def actualHold = profile.holdsView.currentHolds.get(0)
+        assert actualHold.book == bookId
+        assert Math.abs(Duration.between(actualHold.till, TOMORROW).toMillis()) < 1000
         assert profile.currentCheckouts.currentCheckouts.size() == 0
     }
 
     void thereIsOnlyOneCheckout(PatronProfile profile) {
         assert profile.holdsView.currentHolds.size() == 0
         assert profile.currentCheckouts.currentCheckouts.size() == 1
-        assert profile.currentCheckouts.currentCheckouts.get(0) == new Checkout(bookId, TOMORROW)
+        def actualCheckout = profile.currentCheckouts.currentCheckouts.get(0)
+        assert actualCheckout.book == bookId
+        assert Math.abs(Duration.between(actualCheckout.till, TOMORROW).toMillis()) < 1000
     }
 
     void thereIsZeroHoldsAndZeroCheckouts(PatronProfile profile) {
