@@ -9,7 +9,7 @@ category: while-coding
 **What it does**: Prepares the repository for new feature development by creating a feature branch, verifying the build, and understanding the codebase structure.
 
 **Time**: ~5-10 minutes
-**Prerequisites**: Java 11+, Maven 3.6+, Git
+**Prerequisites**: Java 17+, Maven 3.6+, Git
 
 ## Workflow Steps
 
