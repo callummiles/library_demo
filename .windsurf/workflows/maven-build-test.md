@@ -8,7 +8,7 @@ description: How to perform a Maven Build and Test
 This workflow provides a standardized, repeatable process for building, testing, and optionally running the UI for the Library Management System. This DDD (Domain-Driven Design) uses Spring Boot, Spock/Groovy testing, and H2 database.
 
 ## Prerequisites
-- Java 11 or higher
+- Java 17 or higher
 - Maven 3.6+
 - Git
 
@@ -18,7 +18,7 @@ This workflow provides a standardized, repeatable process for building, testing,
 Verify the development environment is properly configured:
 
 ```bash
-# Check Java version (should be 11+)
+# Check Java version (should be 17+)
 java -version
 
 # Check Maven version (should be 3.6+)
@@ -28,7 +28,7 @@ mvn -version
 ls -la src/main/java/io/pillopl/library/
 ```
 
-**Expected Output**: Should show Java 11+, Maven 3.6+, and library domain packages (catalogue, lending, commons)
+**Expected Output**: Should show Java 17+, Maven 3.6+, and library domain packages (catalogue, lending, commons)
 
 ### Step 2: Clean and Compile
 Perform a clean build to ensure no stale artifacts:
@@ -157,7 +157,7 @@ Key metrics to track:
 
 2. **Java Version Mismatch**
    ```bash
-   export JAVA_HOME=/path/to/java11
+   export JAVA_HOME=/path/to/java17
    ```
 
 3. **Port Conflicts (8080 in use)**

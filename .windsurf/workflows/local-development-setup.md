@@ -8,14 +8,14 @@ description: Local Development Setup - Configure environment, dependencies, and 
 **What it does**: Sets up local development environment with all dependencies, debug tools, and optimal configuration for the library management system.
 
 **Time**: ~10-15 minutes
-**Prerequisites**: Java 11+, Maven 3.6+, IDE, jq (JSON processor, install via 'brew install jq')
+**Prerequisites**: Java 17+, Maven 3.6+, IDE, jq (JSON processor, install via 'brew install jq')
 
 ## Workflow Steps
 
 ### Step 1: Environment Verification
 ```bash
 # Verify required versions
-java -version | grep "11\|17\|21"
+java -version | grep "17\|21"
 mvn -version | grep "Apache Maven"
 git config --get user.name && git config --get user.email
 
