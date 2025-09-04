@@ -733,6 +733,46 @@ def 'should make book available when hold canceled'() {
 _Please also note the **when** block, where we manifest the fact that books react to 
 cancellation event_
 
+#### Web Layer Testing
+The project includes comprehensive unit tests for REST API controllers using Spring Boot's `@WebMvcTest` annotation. These tests focus on the web layer in isolation, mocking service dependencies to ensure proper HTTP endpoint behavior, request/response mapping, and error handling.
+
+**PatronProfileController Tests** - A comprehensive test suite covering all patron profile operations:
+- **Complete endpoint coverage**: All 8 HTTP endpoints (GET profile, GET/POST/DELETE holds, GET checkouts)
+- **Request/response testing**: JSON serialization/deserialization and HATEOAS link verification
+- **Error scenario testing**: 404 for not found resources, 500 for service failures, 400 for invalid requests
+- **Service dependency mocking**: PatronProfiles, PlacingOnHold, and CancelingHold services properly stubbed
+- **Edge case coverage**: Empty collections, multiple items, invalid JSON handling
+
+```groovy
+@WebMvcTest(PatronProfileController)
+@ContextConfiguration(classes = [TestConfig])
+class PatronProfileControllerTest extends Specification {
+
+    def 'should return patron profile with HATEOAS links'() {
+        when:
+            def response = mockMvc.perform(get("/profiles/{patronId}", patronId))
+        then:
+            response.andExpect(status().isOk())
+                   .andExpect(jsonPath('$._links.self.href').exists())
+                   .andExpect(jsonPath('$._links.holds.href').exists())
+    }
+    
+    def 'should successfully place hold'() {
+        given:
+            def request = new PlaceHoldRequest(bookId, libraryBranchId, 7)
+            placingOnHold.placeOnHold(_) >> Try.success(Result.Success)
+        when:
+            def response = mockMvc.perform(post("/profiles/{patronId}/holds", patronId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        then:
+            response.andExpect(status().isOk())
+    }
+}
+```
+
+This approach ensures that the web layer is thoroughly tested independently of the business logic, following the hexagonal architecture principles where each layer can be tested in isolation.
+
 ## How to contribute
 
 The project is still under construction, so if you like it enough to collaborate, just let us
