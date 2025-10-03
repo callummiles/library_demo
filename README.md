@@ -1,5 +1,6 @@
 [![CircleCI](https://circleci.com/gh/ddd-by-examples/library.svg?style=svg)](https://circleci.com/gh/ddd-by-examples/library)
 [![Code Coverage](https://codecov.io/gh/ddd-by-examples/library/branch/master/graph/badge.svg)](https://codecov.io/gh/ddd-by-examples/library)
+[![Java Version](https://img.shields.io/badge/Java-11-orange.svg)](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
 
 # Table of contents
 
