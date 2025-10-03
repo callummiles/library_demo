@@ -738,6 +738,37 @@ cancellation event_
 The project is still under construction, so if you like it enough to collaborate, just let us
 know or simply create a Pull Request.
 
+## Pull Request User Attribution
+
+When using automated tools like Devin to create pull requests, it's important to maintain visibility into who initiated each change. This section provides guidance for organizations that want to track PR initiators even when PRs are created by system accounts.
+
+### The Challenge
+
+Some SCM connection types don't support user-level PR authorship, resulting in all automated PRs being attributed to a system account rather than the individual who requested the change. This can make it difficult to trace requests back to their originators.
+
+### Recommended Approach
+
+To ensure clear attribution, we recommend automatically injecting user information into PR descriptions. The solution should:
+
+- Append user attribution to PR bodies in a standardized format
+- Gracefully handle cases where user information may be incomplete
+- Preserve any existing custom PR information
+- Use clear markdown formatting for visibility
+
+### Example Attribution Format
+
+```markdown
+---
+*Initiated by: John Doe (john.doe@example.com)*
+```
+
+For organizations implementing this feature, refer to the detailed technical playbook that covers:
+- Implementation steps and code placement
+- Testing instructions and edge cases
+- Customization options for different organizational needs
+- Deployment considerations and rollback procedures
+
+This approach provides traceability without requiring changes to your SCM authentication model, and can be implemented with minimal code changes that are isolated to PR creation logic.
 
 ## How to Build
 
