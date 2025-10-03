@@ -25,7 +25,9 @@
 
 This is a project of a library, driven by real [business requirements](#domain-description).
 We use techniques strongly connected with Domain Driven Design, Behavior-Driven Development,
-Event Storming, User Story Mapping. 
+Event Storming, User Story Mapping.
+
+This project serves as an excellent reference implementation for teams learning DDD patterns and modern software architecture practices.
 
 ## Domain description
 
