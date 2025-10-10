@@ -20,6 +20,7 @@ import spock.lang.Specification
 import javax.sql.DataSource
 import java.time.Duration
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 import static io.pillopl.library.catalogue.BookType.Restricted
 import static io.pillopl.library.lending.book.model.BookFixture.anyBookId
@@ -36,7 +37,7 @@ class FindingPatronProfileInDatabaseIT extends Specification {
     BookId bookId = anyBookId()
     BookType type = Restricted
 
-    static final Instant TOMORROW = now().plus(Duration.ofDays(1))
+    static final Instant TOMORROW = now().plus(Duration.ofDays(1)).truncatedTo(ChronoUnit.MICROS)
 
     @Autowired
     DataSource dataSource
