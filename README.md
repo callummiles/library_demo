@@ -733,6 +733,43 @@ def 'should make book available when hold canceled'() {
 _Please also note the **when** block, where we manifest the fact that books react to 
 cancellation event_
 
+#### REST Controller Testing
+
+The project includes comprehensive REST API tests using Spring's `@WebMvcTest` annotation. These tests focus on the web layer in isolation while mocking service dependencies.
+
+As an example, `PatronProfileControllerTest` provides full coverage of the `PatronProfileController` REST API:
+- All 8 HTTP endpoints (GET collections, GET single resources, POST, DELETE operations)
+- Request/response mapping and JSON serialization
+- HATEOAS link verification
+- Error scenarios (404 not found, 500 internal errors, validation failures)
+- Service dependency mocking using Spock's `DetachedMockFactory`
+
+Example test demonstrating endpoint testing with mocked services:
+
+```groovy
+def "should return all holds for a patron"() {
+    given:
+        def patronId = anyPatronId()
+        def bookId1 = anyBookId()
+        def bookId2 = anyBookId()
+        def till = Instant.now()
+
+        def hold1 = new Hold(bookId1, till)
+        def hold2 = new Hold(bookId2, till)
+        def holdsView = new HoldsView(io.vavr.collection.List.of(hold1, hold2))
+        def checkoutsView = new CheckoutsView(io.vavr.collection.List.empty())
+        def patronProfile = new PatronProfile(holdsView, checkoutsView)
+    when:
+        def result = mockMvc.perform(get("/profiles/{patronId}/holds/", patronId.getPatronId()))
+    then:
+        1 * patronProfiles.fetchFor(patronId) >> patronProfile
+        result.andExpect(status().isOk())
+              .andExpect(jsonPath('$._links.self.href').exists())
+}
+```
+
+This approach enables fast, focused testing of the REST layer without requiring a full application context or actual database.
+
 ## How to contribute
 
 The project is still under construction, so if you like it enough to collaborate, just let us
