@@ -9,8 +9,8 @@ import io.pillopl.library.lending.librarybranch.model.LibraryBranchId;
 import io.pillopl.library.lending.patron.model.PatronEvent.PatronCreated;
 import io.pillopl.library.lending.patron.model.PatronId;
 import io.pillopl.library.lending.patron.model.Patrons;
-import java.util.UUID;
 import javax.sql.DataSource;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -51,7 +51,7 @@ class LendingDatabaseConfig extends AbstractJdbcConfiguration {
     @Bean
     DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
-                .generateUniqueName(true)
+                .setName("lending-test-" + UUID.randomUUID() + ";MODE=LEGACY")
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("create_patron_db.sql")
                 .addScript("create_lending_book_db.sql")

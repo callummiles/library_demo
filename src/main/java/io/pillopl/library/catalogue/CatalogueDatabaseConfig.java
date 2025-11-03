@@ -11,6 +11,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.UUID;
 
 @Configuration
 class CatalogueDatabaseConfig {
@@ -33,7 +34,7 @@ class CatalogueDatabaseConfig {
     @Bean
     DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
-                .generateUniqueName(true)
+                .setName("catalogue-test-" + UUID.randomUUID() + ";MODE=LEGACY")
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("create_catalogue_book.sql")
                 .build();
