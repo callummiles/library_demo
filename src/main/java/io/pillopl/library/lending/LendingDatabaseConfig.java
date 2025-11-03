@@ -13,16 +13,23 @@ import java.util.UUID;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.ConnectionProperties;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseConfigurer;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
+import java.sql.Connection;
 import org.springframework.transaction.PlatformTransactionManager;
 
 
@@ -50,13 +57,20 @@ class LendingDatabaseConfig extends AbstractJdbcConfiguration {
 
     @Bean
     DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder()
-                .generateUniqueName(true)
-                .setType(EmbeddedDatabaseType.H2)
-                .addScript("create_patron_db.sql")
-                .addScript("create_lending_book_db.sql")
-                .addScript("create_sheets_db.sql")
-                .build();
+        org.h2.jdbcx.JdbcDataSource dataSource = new org.h2.jdbcx.JdbcDataSource();
+        dataSource.setURL("jdbc:h2:mem:lending-" + System.nanoTime() + ";MODE=LEGACY;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
+        dataSource.setUser("sa");
+        dataSource.setPassword("");
+        
+        try (Connection connection = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("create_patron_db.sql"));
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("create_lending_book_db.sql"));
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("create_sheets_db.sql"));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize lending database", e);
+        }
+        
+        return dataSource;
     }
 
     @Profile("local")
