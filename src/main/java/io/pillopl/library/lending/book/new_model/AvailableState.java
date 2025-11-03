@@ -6,6 +6,23 @@ import io.pillopl.library.commons.aggregates.Version;
 import lombok.RequiredArgsConstructor;
 import java.time.Instant;
 
+/**
+ * Represents a book that is available for checkout or hold.
+ * 
+ * <p>Valid transitions from this state:
+ * <ul>
+ *   <li>To OnHoldState - when a patron places a hold</li>
+ *   <li>To CheckedOutState - when a patron checks out the book directly</li>
+ * </ul>
+ * 
+ * <p>Business rules enforced:
+ * <ul>
+ *   <li>Any patron can place a hold on an available book</li>
+ *   <li>Any patron can check out an available book</li>
+ *   <li>Cannot return an available book (not checked out)</li>
+ *   <li>Cannot cancel hold on an available book (no hold exists)</li>
+ * </ul>
+ */
 @RequiredArgsConstructor
 public class AvailableState implements BookState {
     private final Book book;

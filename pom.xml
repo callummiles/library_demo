@@ -143,7 +143,6 @@
                 <configuration>
                     <excludes>
                         <exclude>**/ui/**</exclude>
-                        <exclude>**/new_model/**</exclude>
                     </excludes>
                     <annotationProcessorPaths>
                         <path>

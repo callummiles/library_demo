@@ -7,6 +7,23 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import java.time.Instant;
 
+/**
+ * Represents a book that is checked out to a patron.
+ * 
+ * <p>Valid transitions from this state:
+ * <ul>
+ *   <li>To AvailableState - when the book is returned</li>
+ * </ul>
+ * 
+ * <p>Business rules enforced:
+ * <ul>
+ *   <li>Cannot place a hold on a checked out book</li>
+ *   <li>Cannot check out a book that is already checked out</li>
+ *   <li>Can only be returned to make it available again</li>
+ *   <li>Cannot cancel hold (no hold exists when checked out)</li>
+ *   <li>Cannot expire hold (no hold exists when checked out)</li>
+ * </ul>
+ */
 @RequiredArgsConstructor
 @Getter
 public class CheckedOutState implements BookState {
