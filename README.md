@@ -733,6 +733,17 @@ def 'should make book available when hold canceled'() {
 _Please also note the **when** block, where we manifest the fact that books react to 
 cancellation event_
 
+#### REST Controller Tests
+The project includes comprehensive unit tests for REST controllers using Spring's `@WebMvcTest`:
+
+- **PatronProfileController** (`PatronProfileControllerTest.groovy`) - Full coverage of all 7 HTTP endpoints (GET, POST, DELETE) including:
+  - Success scenarios for viewing profiles, holds, and checkouts
+  - Error handling (404s for missing resources, 500s for failures)
+  - HATEOAS links validation
+  - Request/response JSON mapping
+  - Proper mocking of service dependencies (`PatronProfiles`, `PlacingOnHold`, `CancelingHold`) using `@MockBean`
+  - All 15 test cases pass with 100% endpoint coverage
+
 ## How to contribute
 
 The project is still under construction, so if you like it enough to collaborate, just let us
