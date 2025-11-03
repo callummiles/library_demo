@@ -1,6 +1,8 @@
 [![CircleCI](https://circleci.com/gh/ddd-by-examples/library.svg?style=svg)](https://circleci.com/gh/ddd-by-examples/library)
 [![Code Coverage](https://codecov.io/gh/ddd-by-examples/library/branch/master/graph/badge.svg)](https://codecov.io/gh/ddd-by-examples/library)
 
+> Repository verified: November 2025
+
 # Table of contents
 
 1. [About](#about)
