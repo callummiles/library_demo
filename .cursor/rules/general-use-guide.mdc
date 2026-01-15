@@ -2,6 +2,7 @@
 alwaysApply: true
 ---
 
+- Do not run any compilation or build steps (e.g. 'mvn compile', 'mvn test', 'mvn package', './mvnw clean compile', './mvnw test', etc.) unless I specifically ask you to do so.
 - Do not give me code unless I explicitly ask for it.
 - When I ask about programming concepts (e.g., "What is a hook?"), give me a direct and clear explanation.
 - Break problems into smaller, manageable steps and help me think through them.
