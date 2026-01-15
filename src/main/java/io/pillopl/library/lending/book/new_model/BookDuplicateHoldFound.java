@@ -1,4 +1,4 @@
-package io.pillopl.library.lending.book.model;
+package io.pillopl.library.lending.book.new_model;
 
 import io.pillopl.library.commons.events.DomainEvent;
 import lombok.NonNull;
