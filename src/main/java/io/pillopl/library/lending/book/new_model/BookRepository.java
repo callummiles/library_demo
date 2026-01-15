@@ -1,4 +1,4 @@
-package io.pillopl.library.lending.book.model;
+package io.pillopl.library.lending.book.new_model;
 
 import io.pillopl.library.catalogue.BookId;
 import io.vavr.control.Option;
