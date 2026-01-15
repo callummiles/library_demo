@@ -3,21 +3,24 @@ package io.pillopl.library.lending.book.new_model;
 import io.pillopl.library.catalogue.BookId;
 import io.pillopl.library.catalogue.BookType;
 import io.pillopl.library.commons.aggregates.Version;
+import io.pillopl.library.lending.book.model.BookInformation;
 import io.pillopl.library.lending.librarybranch.model.LibraryBranchId;
 import io.pillopl.library.lending.patron.model.PatronId;
 import lombok.Getter;
 import java.time.Instant;
 
 @Getter
-public class Book {
+public class Book implements io.pillopl.library.lending.book.model.Book {
     private final BookId bookId;
     private final BookType bookType;
+    private final BookInformation bookInformation;
     private BookState state;
     private Version version;
 
     public Book(BookId bookId, BookType bookType, LibraryBranchId branch, Version version) {
         this.bookId = bookId;
         this.bookType = bookType;
+        this.bookInformation = new BookInformation(bookId, bookType);
         this.version = version;
         this.state = new AvailableState(this, branch);
     }
